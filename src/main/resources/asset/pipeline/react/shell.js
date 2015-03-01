@@ -1,5 +1,5 @@
 function print(text) {
-	Packages.asset.pipeline.less.LessProcessor.print(text);
+	Packages.asset.pipeline.react.ReactProcessor.print(text);
     // Packages.com.groovydev.less.Shell.print(text);
 }
 function quit() {}

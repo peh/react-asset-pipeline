@@ -19,16 +19,16 @@ class ReactProcessor extends AbstractProcessor {
         super(precompiler)
         classLoader = this.class.classLoader
 
-        def shellJsResource = classLoader.getResource('asset/pipeline/autoprefixer/shell.js')
-        def autoprefixerJsResource = classLoader.getResource('asset/pipeline/autoprefixer/autoprefixer.js')
-        def envRhinoJsResource = classLoader.getResource('asset/pipeline/autoprefixer/env.rhino.js')
+        def shellJsResource = classLoader.getResource('asset/pipeline/react/shell.js')
+        def envRhinoJsResource = classLoader.getResource('asset/pipeline/react/env.rhino.js')
+        def jsxTransformerResource = classLoader.getResource('asset/pipeline/react/JSXTransformer.js')
         Context cx = Context.enter()
 
         cx.setOptimizationLevel(-1)
         globalScope = cx.initStandardObjects()
         cx.evaluateString(globalScope, shellJsResource.getText('UTF-8'), shellJsResource.file, 1, null)
         cx.evaluateString(globalScope, envRhinoJsResource.getText('UTF-8'), envRhinoJsResource.file, 1, null)
-        cx.evaluateString(globalScope, autoprefixerJsResource.getText('UTF-8'), autoprefixerJsResource.file, 1, null)
+        cx.evaluateString(globalScope, jsxTransformerResource.getText('UTF-8'), jsxTransformerResource.file, 1, null)
         log.info("initilized")
     }
 
@@ -40,12 +40,12 @@ class ReactProcessor extends AbstractProcessor {
             def cx = Context.enter()
             def compileScope = cx.newObject(globalScope)
             compileScope.setParentScope(globalScope)
-            compileScope.put("lessSrc", compileScope, input)
-            compileScope.put("browserArray", compileScope, browsers)
-            def result = cx.evaluateString(compileScope, "autoprefixer.process(lessSrc).css", "autoprefix command", 0, null)
+            compileScope.put("jsxSrc", compileScope, input)
+            compileScope.put("options", compileScope, browsers)
+            def result = cx.evaluateString(compileScope, "JSXTransformer.transform(jsxSrc, options).code", "jsx command", 0, null)
             return result.toString()
         } catch (Exception e) {
-            throw new Exception("Autoprefixing failed: $e")
+            throw new Exception("jsx-transforming $assetFile.name failed: $e")
         } finally {
             Context.exit()
         }
