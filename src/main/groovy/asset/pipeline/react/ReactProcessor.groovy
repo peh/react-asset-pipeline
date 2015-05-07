@@ -13,7 +13,6 @@ class ReactProcessor extends AbstractProcessor {
     public static final ThreadLocal threadLocal = new ThreadLocal();
     Scriptable globalScope
     ClassLoader classLoader
-    def browsers
 
     ReactProcessor(AssetCompiler precompiler) {
         super(precompiler)
@@ -41,8 +40,7 @@ class ReactProcessor extends AbstractProcessor {
             def compileScope = cx.newObject(globalScope)
             compileScope.setParentScope(globalScope)
             compileScope.put("jsxSrc", compileScope, input)
-            compileScope.put("options", compileScope, browsers)
-            def result = cx.evaluateString(compileScope, "JSXTransformer.transform(jsxSrc, options).code", "jsx command", 0, null)
+            def result = cx.evaluateString(compileScope, "JSXTransformer.transform(jsxSrc, {harmony: true}).code", "jsx command", 0, null)
             return result.toString()
         } catch (Exception e) {
             throw new Exception("jsx-transforming $assetFile.name failed: $e")
