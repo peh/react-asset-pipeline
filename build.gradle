@@ -12,7 +12,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
     }
 }
 
@@ -42,18 +42,29 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
+apply plugin: 'com.jfrog.bintray'
+
+bintray {
+    user = bintray_user
+    key = bintray_key
+    publications = ['maven']
+    publish = true
+    pkg {
+        repo = 'plugins'
+        name = 'react-asset-pipeline'
+        userOrg = 'errbuddy'
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId 'add'
+            artifactId 'react-asset-pipeline'
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     name 'react-asset-pipeline'
                     description 'Provides server side jsx compilation for the Asset-Pipeline library.'
-                    groupId group
-                    artifactId artifact
-                    version versino
                     url 'https://github.com/peh/react-asset-pipeline'
                     scm {
                         url 'https://github.com/peh/react-asset-pipeline'
